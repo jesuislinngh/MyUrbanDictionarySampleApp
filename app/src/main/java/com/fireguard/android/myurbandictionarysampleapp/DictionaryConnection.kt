@@ -34,7 +34,7 @@ interface DictionaryService {
         "x-rapidapi-key:${API_KEY_DICTIONARY}"
     )
     @GET("define")
-    fun getTermAsync(@Query("term") term: String): Deferred<DefinitionList>
+    fun getTermAsync(@Query("term") term: String?): Deferred<DefinitionList>
 }
 
 // Dictionary API object
