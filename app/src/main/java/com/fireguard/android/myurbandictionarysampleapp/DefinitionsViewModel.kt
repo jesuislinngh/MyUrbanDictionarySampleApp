@@ -30,14 +30,13 @@ class DefinitionViewModel : ViewModel() {
 
     // Internally, we use a MutableLiveData, because we will be updating the List of MarsProperty
     // with new values
-    private val _properties = MutableLiveData<List<DefinitionItem>>()
+    private val _definitions = MutableLiveData<List<DefinitionItem>>()
 
     // The external LiveData interface to the property is immutable, so only this class can modify
     val definitions: LiveData<List<DefinitionItem>>
-        get() = _properties
+        get() = _definitions
 
-
-    fun getTermDefinitions(term: String) {
+    fun getTermDefinitions(term: String?) {
 
         coroutineScope.launch {
             // Get the Deferred object for our Retrofit request
@@ -47,22 +46,19 @@ class DefinitionViewModel : ViewModel() {
                 // this will run on a thread managed by Retrofit
                 val listResult = getTermsDeferred.await()
                 _status.value = DictionaryApiStatus.DONE
-                _properties.value = listResult.list
+                _definitions.value = listResult.list
                 Log.d(TAG, "we got a list from the server: ${listResult.list.size}")
             } catch (e: Exception) {
                 _status.value = DictionaryApiStatus.ERROR
-                _properties.value = ArrayList()
+                _definitions.value = ArrayList()
             }
         }
 
     }
 
-    /**
-     * When the [ViewModel] is finished, we cancel our coroutine [viewModelJob], which tells the
-     * Retrofit service to stop.
-     */
     override fun onCleared() {
         super.onCleared()
+
         viewModelJob.cancel()
     }
 }
