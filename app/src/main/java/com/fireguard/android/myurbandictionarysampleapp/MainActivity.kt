@@ -1,4 +1,4 @@
-package com.fireguard.android.myurbandictionarysampleapp
+package com.android.myurbandictionarysampleapp
 
 
 import androidx.appcompat.app.AppCompatActivity
@@ -6,55 +6,46 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProviders
+import com.android.myurbandictionarysampleapp.databinding.ActivityMainBinding
+import com.fireguard.android.myurbandictionarysampleapp.DefinitionItemAdapter
+import com.fireguard.android.myurbandictionarysampleapp.DefinitionViewModel
 
-
-const val EXTRA_MESSAGE = "com.fireguard.android.mysampleapplication"
-
-const val API_KEY_DICTIONARY = "db50d29118msh4172e370618d643p1294b3jsnc9607fc9cec0"
 
 class MainActivity : AppCompatActivity() {
+
+    private val TAG = MainActivity::class.java.canonicalName
+
+    private val viewModel: DefinitionViewModel by lazy {
+        ViewModelProviders.of(this).get(DefinitionViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+
+        binding.definitionList.adapter =
+        DefinitionItemAdapter(DefinitionItemAdapter.OnClickListener {
+            Log.d(TAG, "We got here...")
+        })
 
     }
 
-    fun sendMessage(view: View) {
+    fun searchTerm(view: View) {
+        val editText = findViewById<EditText>(R.id.editText)
+        val message = editText.text.toString()
 
-        // val editText = findViewById<EditText>(R.id.editText)
-        // val message = editText.text.toString()
+        if (message.length > 1) {
 
-        /* val intent = Intent(this, DisplayMessageActivity::class.java).apply {
-            putExtra(EXTRA_MESSAGE, message)
-        } */
+            viewModel.getTermDefinitions("hey")
 
-        // Log.d("This is an alert", "activity send message")
-
-        //startActivity(intent)
+        } else {
+            Log.d(TAG, "no term to look for")
+        }
     }
 }
-
-class TermViewModel(val term: String) : ViewModel() {
-    val definitions : MutableLiveData<List<DefinitionItem>> = MutableLiveData()
-
-    fun getData() : LiveData<List<DefinitionItem>> = definitions
-}
-
-data class DefinitionItem(
-    val definition: String,
-    val permalink: String,
-    val thumbs_up: Int,
-    val sound_urls: List<String>,
-    val author: String,
-    val word: String,
-    val defid: Int,
-    val current_vote: Any,
-    val written_on : String,
-    val example : String,
-    val thumbs_down : Int
-)
