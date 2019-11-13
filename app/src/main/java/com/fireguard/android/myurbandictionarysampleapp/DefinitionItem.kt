@@ -12,7 +12,7 @@ data class DefinitionList(
 data class DefinitionItem(
     val definition: String,
     val permalink: String,
-    val thumbs_up: Int,
+    val thumbs_up: String = "0",
     val sound_urls: List<String>,
     val author: String,
     val word: String,
@@ -20,5 +20,5 @@ data class DefinitionItem(
     val current_vote: String,
     val written_on: String,
     val example: String,
-    val thumbs_down: Int
+    val thumbs_down: String = "0"
 ) : Parcelable
