@@ -61,7 +61,9 @@
             app:listData="@{viewModel.definitions}"
             app:spanCount="2"
             tools:itemCount="16"
-            tools:listitem="@layout/definition_item" />
+            tools:listitem="@layout/definition_item"
+            android:divider="@android:color/black"
+            android:dividerHeight="@dimen/divider_height" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
