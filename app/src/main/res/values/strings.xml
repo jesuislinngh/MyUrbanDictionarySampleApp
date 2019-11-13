@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">My sample Urban dictionary</string>
+    <string name="app_name">Urban dictionary</string>
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
+    <string name="filterThumbsUp">Filter by up votes</string>
+    <string name="filterThumbsDown">Filter by down votes</string>
 </resources>
