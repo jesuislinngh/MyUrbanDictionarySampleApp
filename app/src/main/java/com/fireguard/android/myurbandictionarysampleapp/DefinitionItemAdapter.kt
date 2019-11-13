@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.myurbandictionarysampleapp.databinding.DefinitionItemBinding
 
 
+
 class DefinitionItemAdapter(val onClickListener: OnClickListener) :
     ListAdapter<DefinitionItem, DefinitionItemAdapter.DefinitionViewHolder>(CallBack) {
 
