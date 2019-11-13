@@ -36,7 +36,7 @@ class DefinitionViewModel : ViewModel() {
     val definitions: LiveData<List<DefinitionItem>>
         get() = _definitions
 
-    fun getTermDefinitions(term: String?) {
+    fun getTermDefinitions(term: String?, callback: (enable: Boolean) -> Unit) {
 
         coroutineScope.launch {
             // Get the Deferred object for our Retrofit request
@@ -47,13 +47,103 @@ class DefinitionViewModel : ViewModel() {
                 val listResult = getTermsDeferred.await()
                 _status.value = DictionaryApiStatus.DONE
                 _definitions.value = listResult.list
+
                 Log.d(TAG, "we got a list from the server: ${listResult.list.size}")
+
+                callback(true)
+
             } catch (e: Exception) {
                 _status.value = DictionaryApiStatus.ERROR
                 _definitions.value = ArrayList()
+
+                callback(false)
             }
         }
 
+    }
+
+    fun orderTermsByThumbs(thumbUp: Boolean) {
+
+        //_definitions.value = _definitions?.value?.sortedWith(compareBy({ it.thumbs_down }, { it.thumbs_down }))
+          //  ?.asReversed()
+
+        _definitions.value = _definitions?.value?.sortedBy { if (thumbUp) it.thumbs_up else it.thumbs_down }
+
+    }
+
+    private fun mergeSortingList(list: MutableList<DefinitionItem>) : MutableList<DefinitionItem> {
+
+        if (list.size <= 1) return list
+
+        val middle: Int = (list.size / 2) -1
+
+        var left = mutableListOf<DefinitionItem>()
+        var index = 0
+
+        while (index <= middle) {
+            left.add(list.get(0))
+            list.removeAt(0)
+            index++
+        }
+
+        left = mergeSortingList(left)
+
+        var right = mutableListOf<DefinitionItem>()
+        index = 0
+
+        while (index <= middle) {
+            right.add(list.get(0))
+            list.removeAt(0)
+            index++
+        }
+
+        right = mergeSortingList(right)
+
+        return merge(left, right);
+
+    }
+
+    private fun merge(
+        left: MutableList<DefinitionItem>,
+        right: MutableList<DefinitionItem>
+    ): MutableList<DefinitionItem> {
+
+        var result = mutableListOf<DefinitionItem>()
+        var leftIndex = 0
+        var rightIndex = 0
+
+        /* while (leftIndex < left.size && rightIndex < right.size) {
+             if (left.get(leftIndex).compareTo(right.get(rightIndex)) < 1) {
+                 result.add(left.get(leftIndex));
+                 leftIndex++;
+             } else {
+                 result.add(right.get(rightIndex));
+                 rightIndex++;
+             }
+         }
+
+
+         while(leftIndex < left.size() && rightIndex < right.size()) {
+
+             if (left.get(leftIndex).compareTo(right.get(rightIndex)) < 1) {
+                 result.add(left.get(leftIndex));
+                 leftIndex++;
+             } else {
+                 result.add(right.get(rightIndex));
+                 rightIndex++;
+             }
+
+         }
+
+         if(leftIndex < left.size())
+             result.addAll(left.subList(leftIndex, left.size()));
+
+         if(rightIndex < right.size())
+             result.addAll(right.subList(rightIndex, right.size()));
+
+         return result;*/
+
+        return mutableListOf<DefinitionItem>()
     }
 
     override fun onCleared() {
